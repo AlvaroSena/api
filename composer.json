@@ -1,0 +1,9 @@
+{
+    "name": "professor/aula-n",
+    "autoload": {
+        "psr-4": {
+            "Professor\\AulaN\\": "src/"
+        }
+    },
+    "require": {}
+}
