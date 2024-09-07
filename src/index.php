@@ -8,7 +8,6 @@
     $method = $_SERVER['REQUEST_METHOD'];
     $uri = $_SERVER['REQUEST_URI'];
 
-
     switch($method) {
         case "GET":
             switch ($uri) {
@@ -78,15 +77,30 @@
             if ( preg_match('/\/users\/(\d+)/', $uri, $matches)) {
                 $id = $matches[1];
                 $input = json_decode(file_get_contents('php://input'), true);
-                $users[$id] = $input;
-                http_response_code(200);
-                echo json_encode(
-                    [
-                        'status' => true,
-                        'message' => 'User updated',
-                        'users' => $input
-                    ]
-                );
+
+                $users = new UserController();
+                $response = $users.updateUser($input, $id);
+
+                if ($response) {
+                    http_response_code(200);
+                    echo json_encode(
+                        [
+                            'status' => true,
+                            'message' => 'User updated',
+                            'user' => $response
+                        ]
+                    );
+                } else {
+                    http_response_code(204);
+                    echo json_encode(
+                        [
+                            'status' => true,
+                            'message' => 'User updated',
+                            'user' => []
+                        ]
+                    );
+                }
+
                 break;
             }
             
@@ -95,14 +109,30 @@
 
                 $id = $matches[1];
                 unset($users[$id]);
-                http_response_code(204);
-                echo json_encode(
-                    [
-                        'status' => true,
-                        'message' => 'User deleted'
-                    ]
-                );
-                break;
+
+                $users = new UserController();
+                $response = $users.deletetUser($id);
+
+                if ($response === true) {
+                    http_response_code(204);
+                    echo json_encode(
+                        [
+                            'status' => true,
+                            'message' => 'User deleted'
+                        ]
+                    );
+                    break;
+                } else {
+                    http_response_code(204);
+                    echo json_encode(
+                        [
+                            'status' => true,
+                            'message' => 'Error'
+                        ]
+                    );
+                    break;
+                }
+
 
             }
         default:
